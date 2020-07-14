@@ -2,8 +2,6 @@
 #define __controller_H__
 
 
-
-
 #include "CXBOXController.h"
 #include <iostream>
 #include <vector>
@@ -167,6 +165,14 @@ std::vector <xinput_controller*> update(int max_players)
 				(*controller).DPAD_RIGHT = true;
 			}
 			//sticks//left
+			if ((*players[index]).GetState().Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB)
+			{
+				(*controller).LEFT_THUMB = true;
+			}
+			if ((*players[index]).GetState().Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB)
+			{
+				(*controller).RIGHT_THUMB = true;
+			}
 			if (abs((*players[index]).GetState().Gamepad.sThumbLX) > abs(XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE))
 			{
 				(*controller).sThumbLX = (*players[index]).GetState().Gamepad.sThumbLX;
@@ -180,7 +186,7 @@ std::vector <xinput_controller*> update(int max_players)
 			{
 				(*controller).sThumbRX = (*players[index]).GetState().Gamepad.sThumbRX;
 			}
-			if (abs((*players[index]).GetState().Gamepad.sThumbRY) > XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)
+			if ( abs((*players[index]).GetState().Gamepad.sThumbRY) > XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)
 			{
 				(*controller).sThumbRY = (*players[index]).GetState().Gamepad.sThumbRY;
 			}
