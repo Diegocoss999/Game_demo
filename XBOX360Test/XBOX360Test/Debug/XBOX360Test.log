@@ -1,0 +1,5 @@
+﻿cl : command line warning D9035: option 'Gm' has been deprecated and will be removed in a future release
+  main.cpp
+C:\Users\diego\Downloads\XBOX360Test\XBOX360Test\main.cpp(55,2): warning C4091: 'typedef ': ignored on left of 'xinput_controller' when no variable is declared
+C:\Users\diego\Downloads\XBOX360Test\XBOX360Test\main.cpp(79,28): warning C4018: '<': signed/unsigned mismatch
+  XBOX360Test.vcxproj -> C:\Users\diego\Downloads\XBOX360Test\Debug\XBOX360Test.exe
