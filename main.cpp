@@ -77,7 +77,10 @@ int main(int argc, char* argv[])
 					std::cout << index << " right stick\n";
 				}
 				//same for leftthumb press
-
+				if (controllers[index]->LEFT_THUMB)
+					std::cout << index << " left thumb click\n";
+				if (controllers[index]->RIGHT_THUMB)
+					std::cout << index << " right thumb click\n";
 			}
 
 		}
