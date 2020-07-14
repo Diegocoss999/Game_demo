@@ -1,57 +1,64 @@
 #define OLC_PGE_APPLICATION
 #include "olcPixelGameEngine.h"
-
-// #include <windows>
-#include <XInput.h>     // XInput API
+#include "controller.h"
 
 
 using namespace std;
 // Override base class with your custom functionality
 //data
 
+
+//
+
+
 //game
 class Game_Demo: public olc::PixelGameEngine
 {
     private:
-    
+    int playing;
     public:
     Game_Demo()
     {
         sAppName = "Demo";
     }
+    ~Game_Demo()
+    {
+        clean_controller(playing);
+    }
     bool OnUserCreate() override
 	{
+        playing = 2;
+        setup_controllers(playing);
         return true;
     }
     bool OnUserUpdate(float fElapsedTime) override
 	{
-        //player input
-        DWORD dwResult;    
-        for (DWORD i=0; i< XUSER_MAX_COUNT; i++ )
-        {
-            XINPUT_STATE state;
-            ZeroMemory( &state, sizeof(XINPUT_STATE) );
 
-            // Simply get the state of the controller from XInput.
-            dwResult = XInputGetState( i, &state );
+        auto controllers = update(playing);
+		if (all_players_connected(playing))
+		{
 
-            if( dwResult == ERROR_SUCCESS )
-            {
-                // Controller is connected
-                cout<< "T\n";
-            }
-            else
-            {
-                // Controller is not connected
-            }
-        }
+			for (int index = 0; index < playing; ++index) {
+				if (controllers[index]->A)
+				{
 
+					std::cout << index << " player jumps \n";
+				}
+			}
+
+		}
+		else
+		{
+			std::cout << "reconnect controller";
+		}
+		clean_controller_input(controllers);
 
 
 
 
 
-        return true; 
+
+        return true;
     }
 };
 
@@ -73,7 +80,7 @@ class Game_Demo: public olc::PixelGameEngine
 // struct Player
 // {
 // 	int x = 0;
-// 	int y = 0; 
+// 	int y = 0;
 // 	int consumed = 0;
 // 	int score = 0;
 // 	olc::Key current_direction = olc::E;
@@ -95,7 +102,7 @@ class Game_Demo: public olc::PixelGameEngine
 // 	}
 
 // private:
-	
+
 // 	// Number of tiles in world
 // 	olc::vi2d vWorldSize = { 14, 10 };
 
@@ -115,7 +122,7 @@ class Game_Demo: public olc::PixelGameEngine
 // 	double speed =7.0; // squares/sec
 // 	double x=0;
 // 	double y=0;
-	
+
 // public:
 // 	bool OnUserCreate() override
 // 	{
@@ -134,11 +141,11 @@ class Game_Demo: public olc::PixelGameEngine
 // 		auto dir_W = GetKey(olc::A);
 // 		auto dir_E = GetKey(olc::D);
 // 		auto dir_S = GetKey(olc::S);
-// 		auto dir_N = GetKey(olc::W); 
+// 		auto dir_N = GetKey(olc::W);
 // 		bool eating = False;
 // 		//end game
 // 		if (player.x < 0 || player.y < 0 || player.x >23 || player.y>23)
-// 		{	
+// 		{
 // 			return false;
 // 		}
 // 		//food
@@ -184,7 +191,7 @@ class Game_Demo: public olc::PixelGameEngine
 // 		else if (dir_S.bHeld|| dir_S.bPressed)
 // 		{
 // 			// cout << "s";
-			
+
 // 			// ++player.y;
 // 			player.current_direction = olc::S;
 // 			// 	olc::vi2d vCell = { vMouse.x / vTileSize.x, vMouse.y / vTileSize.y };
@@ -225,7 +232,7 @@ class Game_Demo: public olc::PixelGameEngine
 // 		{
 // 			//update
 // 		DrawPartialSprite(player.x* vTileSize.x, player.y*vTileSize.y, sprIsom, 0, 0, vTileSize.x, vTileSize.y);
-		
+
 // 		int size = player.body.size() ;
 // 		// if (size > 0)
 // 		// {
@@ -243,12 +250,12 @@ class Game_Demo: public olc::PixelGameEngine
 // 		else
 // 		{
 // 			DrawPartialSprite(player.x* vTileSize.x, player.y*vTileSize.y, sprIsom, 0, 0, vTileSize.x, vTileSize.y);
-		
+
 // 			int size = player.body.size() ;
 // 			for (int i = 0; i < size ; ++i)
 // 			{
 // 				DrawPartialSprite(player.body[i].x * vTileSize.x,player.body[i].y*vTileSize.y, sprIsom, 0, 0, vTileSize.x, vTileSize.y);
-				
+
 // 			}
 // 		}
 // 		int size = player.body.size() ;
@@ -261,31 +268,31 @@ class Game_Demo: public olc::PixelGameEngine
 // 				return false;
 // 			}
 // 		}
-		
-		
+
+
 // 		olc::vi2d vMouse = { GetMouseX(), GetMouseY() };
-		
+
 // 	// 	// Work out active cell
 // 		olc::vi2d vCell = { vMouse.x / vTileSize.x, vMouse.y / vTileSize.y };
 // 	// 	// Work out selected cell by transforming screen cell
-// 		olc::vi2d vSelected = 
+// 		olc::vi2d vSelected =
 // 		{
 // 			(vCell.y - vOrigin.y) + (vCell.x - vOrigin.x),
-// 			(vCell.y - vOrigin.y) - (vCell.x - vOrigin.x) 
-// 		};		
+// 			(vCell.y - vOrigin.y) - (vCell.x - vOrigin.x)
+// 		};
 // 	// 	// Labmda function to convert "world" coordinate into screen space
 // 		auto ToScreen = [&](int x, int y)
-// 		{			
+// 		{
 // 			return olc::vi2d
 // 			{
 // 				(vOrigin.x * vTileSize.x) + (x - y) * (vTileSize.x / 2),
 // 				(vOrigin.y * vTileSize.y) + (x + y) * (vTileSize.y / 2)
 // 			};
 // 		};
-		
+
 // 	// 	// Draw Hovered Cell Boundary
 // 		DrawRect(vCell.x * vTileSize.x, vCell.y * vTileSize.y, vTileSize.x, vTileSize.y, olc::RED);
-				
+
 // 	// 	// Draw Debug Info
 // 		// DrawString(4, 4, "Mouse   : " + std::to_string(vMouse.x) + ", " + std::to_string(vMouse.y), olc::WHITE);
 // 		DrawString(4, 4, "player   : " + std::to_string(player.x) + ", " + std::to_string(player.y), olc::WHITE);
@@ -298,10 +305,12 @@ class Game_Demo: public olc::PixelGameEngine
 
 int main()
 {
+    cout<<"hello\n";
 	Game_Demo demo;
 	if (demo.Construct(480, 480, 2, 2))
 		demo.Start();
     // Game_Demo gd;
     // gd.Start();
+    cout<<"exit\n";
 	return 0;
 }
